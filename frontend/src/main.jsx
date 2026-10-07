@@ -1060,7 +1060,8 @@ function App() {
     useRef(null);
   const userMarker =
   useRef(null);  
-
+  const destinationMarker =
+  useRef(null);
   const locationChannel =
     useRef(null);
 
@@ -1452,6 +1453,52 @@ useEffect(() => {
   }, [
     filteredPandals
   ]);
+  /* =======================================================
+   DESTINATION BLUE MARKER
+======================================================= */
+
+useEffect(() => {
+  if (!mapObj.current) {
+    return;
+  }
+
+  if (destinationMarker.current) {
+    destinationMarker.current.remove();
+    destinationMarker.current = null;
+  }
+
+  if (!selectedPandal) {
+    return;
+  }
+
+  const lat = Number(selectedPandal.latitude);
+  const lon = Number(selectedPandal.longitude);
+
+  if (
+    !Number.isFinite(lat) ||
+    !Number.isFinite(lon)
+  ) {
+    return;
+  }
+
+  destinationMarker.current =
+    L.circleMarker(
+      [lat, lon],
+      {
+        radius: 10,
+        color: '#ffffff',
+        weight: 3,
+        fillColor: '#1a73e8',
+        fillOpacity: 1
+      }
+    )
+      .addTo(mapObj.current)
+      .bindPopup(
+        '📍 ' +
+          (selectedPandal.name ||
+            'Destination')
+      );
+}, [selectedPandal]);
 
   /* =======================================================
      SHOW ROUTE
