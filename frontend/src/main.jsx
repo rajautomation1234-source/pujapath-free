@@ -1058,6 +1058,8 @@ function App() {
 
   const friendMarker =
     useRef(null);
+  const userMarker =
+  useRef(null);  
 
   const locationChannel =
     useRef(null);
@@ -1711,6 +1713,42 @@ function App() {
   }, [
     friendLoc
   ]);
+/* =======================================================
+   USER LOCATION BLUE DOT
+======================================================= */
+
+useEffect(() => {
+  if (!mapObj.current) {
+    return;
+  }
+
+  if (userMarker.current) {
+    userMarker.current.remove();
+    userMarker.current = null;
+  }
+
+  if (
+    userLocation &&
+    Number.isFinite(userLocation.lat) &&
+    Number.isFinite(userLocation.lon)
+  ) {
+    userMarker.current = L.circleMarker(
+      [
+        userLocation.lat,
+        userLocation.lon
+      ],
+      {
+        radius: 8,
+        color: '#ffffff',
+        weight: 3,
+        fillColor: '#4285F4',
+        fillOpacity: 1
+      }
+    )
+      .addTo(mapObj.current)
+      .bindPopup('📍 Your current location');
+  }
+}, [userLocation]);
 
   /* =======================================================
      AUTH ACTIONS
