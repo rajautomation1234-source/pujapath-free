@@ -2157,96 +2157,96 @@ useEffect(() => {
   ======================================================= */
 
   async function findNearest() {
-    if (
-      !navigator.geolocation
-    ) {
-      return alert(
-        'Geolocation is not supported'
-      );
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      async (
-        position
-      ) => {
-        try {
-          const lat =
-            position.coords.latitude;
-
-          const lon =
-            position.coords.longitude;
-
-          setUserLocation({
-            lat,
-            lon
-          });
-
-          const response =
-            await fetch(
-              API +
-                '/api/nearby',
-              {
-                method:
-                  'POST',
-
-                headers: {
-                  'Content-Type':
-                    'application/json'
-                },
-
-                body:
-                  JSON.stringify({
-                    lat,
-                    lon,
-                    radius:
-                      1000
-                  })
-              }
-            );
-
-          if (
-            !response.ok
-          ) {
-            throw new Error(
-              'Nearby API error'
-            );
-          }
-
-          const data =
-            await response.json();
-
-          setNearby(
-            Array.isArray(
-              data
-            )
-              ? data
-              : []
-          );
-        } catch (
-          error
-        ) {
-          alert(
-            'Nearby data unavailable'
-          );
-        }
-      },
-      () =>
-        alert(
-          'Location unavailable'
-        ),
-      {
-        enableHighAccuracy:
-          true,
-
-        maximumAge:
-          0,
-
-        timeout:
-          15000
-      }
-    );
+  if (!navigator.geolocation) {
+    return alert('Geolocation is not supported');
   }
 
+  const runNearby = async (lat, lon) => {
+    setUserLocation({
+      lat,
+      lon
+    });
+
+    const response = await fetch(
+      API + '/api/nearby',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          lat,
+          lon,
+          radius: 1000
+        })
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Nearby API error');
+    }
+
+    const data = await response.json();
+
+    setNearby(
+      Array.isArray(data)
+        ? data
+        : []
+    );
+  };
+
+  if (
+    userLocation &&
+    Number.isFinite(userLocation.lat) &&
+    Number.isFinite(userLocation.lon)
+  ) {
+    try {
+      await runNearby(
+        userLocation.lat,
+        userLocation.lon
+      );
+      return;
+    } catch (error) {
+      console.log(
+        'Nearby API failed:',
+        error
+      );
+    }
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    async (position) => {
+      try {
+        await runNearby(
+          position.coords.latitude,
+          position.coords.longitude
+        );
+      } catch (error) {
+        console.error(
+          'Nearby API error:',
+          error
+        );
+        alert('Nearby data unavailable');
+      }
+    },
+    (error) => {
+      console.log(
+        'GPS error:',
+        error.code,
+        error.message
+      );
+
+      alert(
+        'Could not get your location. Please allow location access and try again.'
+      );
+    },
+    {
+      enableHighAccuracy: true,
+      maximumAge: 10000,
+      timeout: 30000
+    }
+  );
+}
   /* =======================================================
      STOP NAVIGATION
   ======================================================= */
