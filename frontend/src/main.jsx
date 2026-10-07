@@ -1321,7 +1321,67 @@ function App() {
       }
     };
   }, []);
+  /* =======================================================
+   LIVE USER LOCATION
+======================================================= */
 
+useEffect(() => {
+  if (!navigator.geolocation) {
+    return;
+  }
+
+  let centered = false;
+
+  const watchId =
+    navigator.geolocation.watchPosition(
+      (position) => {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+
+        if (
+          !Number.isFinite(lat) ||
+          !Number.isFinite(lon)
+        ) {
+          return;
+        }
+
+        setUserLocation({
+          lat,
+          lon
+        });
+
+        // Center the map only the first time GPS is received
+        if (
+          !centered &&
+          mapObj.current
+        ) {
+          mapObj.current.setView(
+            [lat, lon],
+            15
+          );
+
+          centered = true;
+        }
+      },
+      (error) => {
+        console.log(
+          '📍 User location unavailable:',
+          error.message
+        );
+      },
+      {
+        enableHighAccuracy: true,
+        maximumAge: 5000,
+        timeout: 15000
+      }
+    );
+
+  return () => {
+    navigator.geolocation.clearWatch(
+      watchId
+    );
+  };
+}, []);
   /* =======================================================
      PANDAL MARKERS
   ======================================================= */
