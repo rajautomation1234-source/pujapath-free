@@ -185,7 +185,13 @@ const filteredPandals = pandals.filter((pandal) => {
 ];
   return (
     <div className="checklist-page">
-
+      <button
+  type="button"
+  className="checklist-back-button"
+  onClick={onClose}
+>
+  ← Back to App
+</button>
       {/* Header */}
       <div className="checklist-page-header">
         <h1>🪔 Durga Puja Pandal Checklist</h1>
