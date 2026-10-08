@@ -2033,3 +2033,20 @@ header > span {
     font-size: 15px;
   }
 }
+.info-email {
+  margin-top: 20px;
+  padding: 14px 16px;
+  background: #f0fdf4;
+  border-radius: 10px;
+  font-size: 16px;
+}
+
+.info-email a {
+  color: #166534;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.info-email a:hover {
+  text-decoration: underline;
+}

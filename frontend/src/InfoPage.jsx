@@ -69,14 +69,15 @@ const pageContent = {
   },
 
   "Contact": {
-    icon: "✉️",
-    title: "Contact Us",
-    paragraphs: [
-      "Have you found a wrong pandal name, location or other website problem?",
-      "You can use this section to report issues and provide suggestions for improving PujaPath Live.",
-      "Thank you for helping make the project more useful for Puja visitors."
-    ]
-  },
+  icon: "✉️",
+  title: "Contact Us",
+  paragraphs: [
+    "Have you found a wrong pandal name, location or other website problem?",
+    "You can use the email below to report issues, share suggestions or provide feedback about PujaPath Live.",
+    "Thank you for helping make the project more useful for Puja visitors."
+  ],
+  email: "pujapathlive@gmail.com"
+},
 
   "User Guide": {
     icon: "📘",
@@ -132,6 +133,15 @@ export default function InfoPage({
             </p>
           )
         )}
+        {content.email && (
+  <p className="info-email">
+    📧{" "}
+    <strong>Email:</strong>{" "}
+    <a href={`mailto:${content.email}`}>
+      {content.email}
+    </a>
+  </p>
+)}
 
         {content.notice && (
           <div className="info-notice">
