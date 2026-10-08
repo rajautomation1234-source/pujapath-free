@@ -1333,7 +1333,7 @@ function App() {
           null;
       }
     };
-  }, []);
+  }, [session]);
   /* =======================================================
    LIVE USER LOCATION
 ======================================================= */
@@ -4300,8 +4300,88 @@ useEffect(() => {
   /* =======================================================
      RENDER
   ======================================================= */
+    /* =======================================================
+     LOGIN REQUIRED
+  ======================================================= */
 
+  if (!session && !recoveryMode) {
+    return (
+      <div className="auth-gate">
+
+        <header>
+          <div className="brand">
+            <img
+              src="/maa-durga-logo.png"
+              alt="Maa Durga"
+              className="brand-logo"
+            />
+
+            <h1>
+              PujaPath Live
+            </h1>
+          </div>
+        </header>
+
+        <main>
+
+          <section className="auth auth-gate-card">
+
+            <h2>
+              🪔 Welcome to PujaPath Live
+            </h2>
+
+            <p>
+              Please sign in or create an account
+              to use PujaPath Live.
+            </p>
+
+            <input
+              placeholder="Email"
+              value={email}
+              onChange={(e) =>
+                setEmail(e.target.value)
+              }
+            />
+
+            <input
+              placeholder="Password"
+              type="password"
+              value={password}
+              onChange={(e) =>
+                setPassword(e.target.value)
+              }
+            />
+
+            <button
+              onClick={() =>
+                auth('signin')
+              }
+            >
+              Sign in
+            </button>
+
+            <button
+              onClick={() =>
+                auth('signup')
+              }
+            >
+              Create account
+            </button>
+
+            <button
+              onClick={resetPassword}
+            >
+              Forgot password?
+            </button>
+
+          </section>
+
+        </main>
+      </div>
+    );
+  }
   return (
+    
     <div>
 
       {/* =================================================

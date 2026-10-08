@@ -2050,3 +2050,36 @@ header > span {
 .info-email a:hover {
   text-decoration: underline;
 }
+/* =================================================
+   AUTHENTICATION GATE
+================================================= */
+
+.auth-gate {
+  min-height: 100vh;
+}
+
+.auth-gate-card {
+  max-width: 520px;
+  margin: 50px auto;
+  text-align: center;
+}
+
+.auth-gate-card h2 {
+  margin-bottom: 10px;
+}
+
+.auth-gate-card p {
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.auth-gate-card input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 12px;
+}
+
+.auth-gate-card button {
+  margin: 5px;
+}
