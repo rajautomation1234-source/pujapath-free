@@ -10,7 +10,7 @@ import BudgetTracker from "./BudgetTracker";
 import WeatherCard from "./WeatherCard";
 import ZoneBadge from "./ZoneBadge";
 import FavouriteShare from "./FavouriteShare";
-
+import InfoPage from "./InfoPage";
 import { createRoot } from 'react-dom/client';
 import { createClient } from '@supabase/supabase-js';
 
@@ -909,7 +909,7 @@ function App() {
 
   const [showPlanner, setShowPlanner] =
     useState(false);
-
+  const [infoPage, setInfoPage] = useState(null);
   const [
     showBudgetTracker,
     setShowBudgetTracker
@@ -5223,7 +5223,14 @@ useEffect(() => {
           />
         )}
 
-           </main>
+           {infoPage && (
+  <InfoPage
+    page={infoPage}
+    onBack={() => setInfoPage(null)}
+  />
+)}
+
+</main>
 
       {/* =================================================
           FOOTER
@@ -5231,15 +5238,64 @@ useEffect(() => {
       <footer className="site-footer">
 
         <div className="footer-links">
-          <span>About Us</span>
-          <span>Our Vision</span>
-          <span>Privacy Policy</span>
-          <span>Terms</span>
-          <span>Location Policy</span>
-          <span>Safety</span>
-          <span>Contact</span>
-          <span>User Guide</span>
-        </div>
+
+  <button
+    type="button"
+    onClick={() => setInfoPage("About Us")}
+  >
+    About Us
+  </button>
+
+  <button
+    type="button"
+    onClick={() => setInfoPage("Our Vision")}
+  >
+    Our Vision
+  </button>
+
+  <button
+    type="button"
+    onClick={() => setInfoPage("Privacy Policy")}
+  >
+    Privacy Policy
+  </button>
+
+  <button
+    type="button"
+    onClick={() => setInfoPage("Terms")}
+  >
+    Terms
+  </button>
+
+  <button
+    type="button"
+    onClick={() => setInfoPage("Location Policy")}
+  >
+    Location Policy
+  </button>
+
+  <button
+    type="button"
+    onClick={() => setInfoPage("Safety")}
+  >
+    Safety
+  </button>
+
+  <button
+    type="button"
+    onClick={() => setInfoPage("Contact")}
+  >
+    Contact
+  </button>
+
+  <button
+    type="button"
+    onClick={() => setInfoPage("User Guide")}
+  >
+    User Guide
+  </button>
+
+</div>
 
         <div className="footer-copy">
           © 2026 PujaPath Live

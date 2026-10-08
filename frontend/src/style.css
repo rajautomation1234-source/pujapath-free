@@ -1905,3 +1905,131 @@ header > span {
     font-size: 15px;
   }
 }
+/* =================================================
+   INFO PAGES
+================================================= */
+
+.info-page {
+  margin-top: 30px;
+  padding: 24px;
+  background: #fffaf0;
+  border: 1px solid #e5d7bd;
+  border-radius: 16px;
+}
+
+.info-page-header {
+  margin-bottom: 22px;
+}
+
+.info-back-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px;
+  margin-bottom: 18px;
+  border: none;
+  border-radius: 10px;
+  background: #166534;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.info-back-button:hover {
+  background: #14532d;
+}
+
+.info-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.info-icon {
+  font-size: 32px;
+}
+
+.info-title h2 {
+  margin: 0;
+  font-size: 28px;
+}
+
+.info-page-content {
+  max-width: 900px;
+  line-height: 1.7;
+}
+
+.info-page-content p {
+  margin: 0 0 16px;
+  font-size: 16px;
+}
+
+.info-notice {
+  margin-top: 20px;
+  padding: 14px 16px;
+  border-left: 4px solid #166534;
+  background: #f0fdf4;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.info-guide-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 12px;
+  padding: 12px 18px;
+  border-radius: 10px;
+  background: #166534;
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.info-guide-button:hover {
+  background: #14532d;
+}
+
+/* Footer buttons */
+
+.footer-links button {
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+.footer-links button:hover {
+  text-decoration: underline;
+}
+
+.footer-links button:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Mobile */
+
+@media (max-width: 600px) {
+  .info-page {
+    padding: 18px;
+  }
+
+  .info-title h2 {
+    font-size: 22px;
+  }
+
+  .info-icon {
+    font-size: 26px;
+  }
+
+  .info-page-content p {
+    font-size: 15px;
+  }
+}
