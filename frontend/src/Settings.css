@@ -1,0 +1,251 @@
+
+.puja-settings {
+  max-width: 850px;
+  margin: 12px auto;
+  padding: 16px;
+  color: #153f30;
+}
+
+.settings-header {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  column-gap: 20px;
+  margin-bottom: 16px;
+  padding: 18px 22px;
+  border-radius: 0;
+  background: linear-gradient(110deg, #104632, #176747);
+  color: #fff;
+}
+
+.settings-header h1 {
+  margin: 0;
+  font-size: clamp(26px, 4vw, 34px);
+  text-align: center;
+}
+
+.settings-header p {
+  grid-column: 2;
+  margin: 4px 0 0;
+  color: #d7eee1;
+  text-align: center;
+  font-size: 14px;
+}
+
+.settings-back {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  padding: 10px 14px;
+  border: 1px solid #cce4d6;
+  border-radius: 10px;
+  background: #f0faf4;
+  color: #176747;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.settings-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 12px;
+  padding: 18px 20px;
+  border: 1px solid #dcebe2;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 4px 16px #164b3010;
+}
+
+.settings-icon {
+  flex-shrink: 0;
+  font-size: 26px;
+}
+
+.settings-card-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.settings-card h2 {
+  margin: 0 0 6px;
+  font-size: 19px;
+}
+
+.settings-card p {
+  margin: 0 0 12px;
+  color: #65776d;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.danger-card {
+  border-color: #f0d4d4;
+}
+
+.clear-puja-button,
+.confirm-clear-button {
+  padding: 11px 17px;
+  border: 0;
+  border-radius: 10px;
+  background: #176747;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.clear-puja-button:hover {
+  background: #104c34;
+}
+
+.puja-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgb(8 24 16 / 60%);
+}
+
+.puja-confirm-modal {
+  width: 100%;
+  max-width: 430px;
+  padding: 30px 24px;
+  border-radius: 22px;
+  background: white;
+  text-align: center;
+  box-shadow: 0 20px 70px #0003;
+}
+
+.puja-modal-icon {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  background: #e1f4e8;
+  font-size: 30px;
+}
+
+.puja-confirm-modal h2 {
+  margin: 0 0 12px;
+  color: #153f30;
+}
+
+.puja-confirm-modal p {
+  margin-bottom: 24px;
+  color: #65776d;
+  line-height: 1.6;
+}
+
+.puja-modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.keep-data-button {
+  min-height: 44px;
+  padding: 12px 16px;
+  border: 1px solid #cce4d6;
+  border-radius: 10px;
+  background: #f0faf4;
+  color: #176747;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.puja-modal-actions .confirm-clear-button {
+  min-height: 44px;
+  background: #dc2626;
+}
+
+.puja-modal-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+@media (max-width: 520px) {
+  .puja-settings {
+    margin: 8px auto;
+    padding: 10px;
+  }
+
+  .settings-header {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 16px;
+    text-align: center;
+  }
+
+  .settings-header h1 {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .settings-header p {
+    grid-column: 1;
+    grid-row: 2;
+    margin: 0;
+  }
+
+  .settings-back {
+    grid-column: 1;
+    grid-row: 3;
+    justify-self: start;
+  }
+
+  .settings-card {
+    gap: 12px;
+    margin-bottom: 10px;
+    padding: 16px;
+  }
+
+  .settings-card h2 {
+    font-size: 17px;
+  }
+
+  .puja-confirm-modal {
+    padding: 24px 18px;
+  }
+
+  .puja-modal-actions {
+    flex-direction: column;
+  }
+
+  .puja-modal-actions button {
+    width: 100%;
+  }
+}
+
+.puja-settings {
+  max-width: 850px;
+  margin: 6px auto;
+  padding: 10px 16px;
+}
+
+.settings-header {
+  margin-bottom: 10px;
+  padding: 12px 18px;
+}
+
+.settings-header h1 {
+  font-size: clamp(24px, 3vw, 32px);
+}
+
+.settings-card {
+  margin-bottom: 10px;
+  padding: 14px 18px;
+}
+
+.settings-card p {
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+
+.clear-puja-button {
+  padding: 10px 16px;
+}

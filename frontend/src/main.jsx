@@ -11,6 +11,10 @@ import WeatherCard from "./WeatherCard";
 import ZoneBadge from "./ZoneBadge";
 import FavouriteShare from "./FavouriteShare";
 import InfoPage from "./InfoPage";
+
+import Settings from "./Settings";
+import ProfileMenu from "./ProfileMenu";
+
 import { createRoot } from 'react-dom/client';
 import { createClient } from '@supabase/supabase-js';
 
@@ -906,7 +910,7 @@ function App() {
 
   const [showChecklist, setShowChecklist] =
     useState(false);
-
+  const [showSettings, setShowSettings] = useState(false);
   const [showPlanner, setShowPlanner] =
     useState(false);
   const [infoPage, setInfoPage] = useState(null);
@@ -4401,13 +4405,34 @@ useEffect(() => {
           </h1>
         </div>
 
-        <span>
-          {status}
-        </span>
+        
+<div className="header-actions">
+  <span>{status}</span>
+
+  {session && (
+    <ProfileMenu
+      user={session.user}
+      onOpenSettings={() => {
+        setShowSettings(true);
+        window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+      }}
+      onSignOut={() => supabase.auth.signOut()}
+    />
+  )}
+</div>
+
       </header>
 
       <main>
-
+        {session && showSettings ? (
+          <Settings
+            onBack={() => {
+              setShowSettings(false);
+              window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+            }}
+          />
+        ) : (
+          <>
         {/* =================================================
             AUTH
         ================================================= */}
@@ -5241,7 +5266,7 @@ useEffect(() => {
         {/* =================================================
             CHECKLIST
         ================================================= */}
-
+        
         {showChecklist && (
           <Checklist
             pandals={
@@ -5308,8 +5333,9 @@ useEffect(() => {
     onBack={() => setInfoPage(null)}
   />
 )}
-
-</main>
+          </>
+        )}
+      </main>
 
       {/* =================================================
           FOOTER
