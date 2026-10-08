@@ -146,7 +146,10 @@ const filteredPandals = pandals.filter((pandal) => {
     totalPandals > 0
       ? Math.round((totalVisited / totalPandals) * 100)
       : 0;
-  const achievements = [
+  const halfwayRequired =
+  Math.ceil(totalPandals / 2);
+
+const achievements = [
   {
     id: "first",
     icon: "🌱",
@@ -172,15 +175,15 @@ const filteredPandals = pandals.filter((pandal) => {
     id: "halfway",
     icon: "🔥",
     title: "Halfway There",
-    description: "Visit 54 pandals",
-    required: 54,
+    description: `Visit ${halfwayRequired} pandals`,
+    required: halfwayRequired,
   },
   {
     id: "master",
     icon: "👑",
     title: "Durga Puja Master",
-    description: "Visit all 108 pandals",
-    required: 108,
+    description: `Visit all ${totalPandals} pandals`,
+    required: totalPandals,
   },
 ];
   return (
