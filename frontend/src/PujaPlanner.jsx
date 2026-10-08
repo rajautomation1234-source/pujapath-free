@@ -3,7 +3,11 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "./PujaPlanner.css";
 
-export default function PujaPlanner({ pandals = [], onClose }) {
+export default function PujaPlanner({
+  pandals = [],
+  userLocation,
+  onClose
+}) {
   // =========================
   // ACTIVE DAY
   // =========================
@@ -61,6 +65,24 @@ export default function PujaPlanner({ pandals = [], onClose }) {
     duration: 0,
   });
 
+  const [
+  routeVersion,
+  setRouteVersion,
+] = useState(0);
+  // =========================
+// REACHED PANDALS
+// =========================
+
+const [
+  reachedPandalIds,
+  setReachedPandalIds,
+] = useState([]);
+
+const [
+  arrivalMessage,
+  setArrivalMessage,
+] = useState("");
+
   // =========================
   // TRANSPORT STATE
   // =========================
@@ -113,9 +135,15 @@ export default function PujaPlanner({ pandals = [], onClose }) {
 
   const plannerMarkersLayer =
     useRef(null);
-
+  const plannerRouteCoordinates =
+  useRef([]);
   const transportMarker =
     useRef(null);
+  const plannerUserLocationMarker =
+  useRef(null);
+
+  const plannerLocationCentered =
+  useRef(false);  
 
   // =========================
   // SAVE DAYS
@@ -254,7 +282,16 @@ export default function PujaPlanner({ pandals = [], onClose }) {
       plannerMapObject.current.removeLayer(
         transportMarker.current
       );
+      if (
+  plannerUserLocationMarker.current
+) {
+  plannerMapObject.current.removeLayer(
+    plannerUserLocationMarker.current
+  );
 
+  plannerUserLocationMarker.current =
+    null;
+}  
       transportMarker.current =
         null;
     }
@@ -1153,6 +1190,91 @@ out center tags;
         null;
     };
   }, []);
+    // =========================
+  // LIVE USER LOCATION
+  // =========================
+
+  useEffect(() => {
+    const map =
+      plannerMapObject.current;
+
+    if (!map) {
+      return;
+    }
+
+    if (
+      !userLocation ||
+      !Number.isFinite(
+        Number(userLocation.lat)
+      ) ||
+      !Number.isFinite(
+        Number(userLocation.lon)
+      )
+    ) {
+      return;
+    }
+
+    const lat =
+      Number(userLocation.lat);
+
+    const lon =
+      Number(userLocation.lon);
+
+    // =========================
+    // CREATE BLUE MARKER
+    // =========================
+
+    if (
+      !plannerUserLocationMarker.current
+    ) {
+      plannerUserLocationMarker.current =
+        L.circleMarker(
+          [lat, lon],
+          {
+            radius: 9,
+            color: "#ffffff",
+            weight: 3,
+            fillColor: "#2563eb",
+            fillOpacity: 1,
+          }
+        )
+          .addTo(map)
+          .bindTooltip(
+            "📍 Your live location",
+            {
+              direction: "top",
+              offset: [0, -8],
+            }
+          );
+    } else {
+      // =========================
+      // MOVE BLUE MARKER
+      // =========================
+
+      plannerUserLocationMarker.current.setLatLng(
+        [lat, lon]
+      );
+    }
+
+    // =========================
+    // CENTER MAP ONLY ONCE
+    // =========================
+
+    if (
+      !plannerLocationCentered.current
+    ) {
+      map.setView(
+        [lat, lon],
+        15,
+        {
+          animate: true,
+        }
+      );
+
+      plannerLocationCentered.current =
+        true;
+    }
+  }, [userLocation]);
 
   // =========================
   // MAP MARKERS + ROAD ROUTE
@@ -1239,7 +1361,13 @@ out center tags;
                 width:34px;
                 height:34px;
                 border-radius:50%;
-                background:#176b48;
+                background:${
+  reachedPandalIds.includes(
+    getPandalId(pandal)
+  )
+    ? "#7c3aed"
+    : "#176b48"
+};
                 color:white;
                 display:flex;
                 align-items:center;
@@ -1365,17 +1493,30 @@ out center tags;
             );
           }
 
-          setRouteInfo({
-            distance:
-              Number(
-                route.distance
-              ) || 0,
+          const routeDistance =
+  Number(
+    route.distance
+  ) || 0;
 
-            duration:
-              Number(
-                route.duration
-              ) || 0,
-          });
+const WALKING_SPEED_KMH =
+  4.5;
+
+const walkingDurationSeconds =
+  routeDistance > 0
+    ? (
+        routeDistance /
+        1000 /
+        WALKING_SPEED_KMH
+      ) * 3600
+    : 0;
+
+setRouteInfo({
+  distance:
+    routeDistance,
+
+  duration:
+    walkingDurationSeconds,
+});
 
           const routeLatLngs =
             route.geometry.coordinates.map(
@@ -1387,19 +1528,11 @@ out center tags;
                 longitude,
               ]
             );
-
-          plannerRouteLayer.current =
-            L.polyline(
-              routeLatLngs,
-              {
-                color:
-                  "#176b48",
-
-                weight: 6,
-
-                opacity: 0.9,
-              }
-            ).addTo(map);
+            plannerRouteCoordinates.current =
+  routeLatLngs;
+            setRouteVersion(
+  (previous) => previous + 1
+);
 
           const bounds =
             L.latLngBounds(
@@ -1433,9 +1566,243 @@ out center tags;
 
   }, [
     activeDayPandals,
+    reachedPandalIds,
     API,
   ]);
+  // =========================
+// DYNAMIC ROUTE COLORS
+// =========================
 
+useEffect(() => {
+  const map =
+    plannerMapObject.current;
+
+  const routeCoordinates =
+    plannerRouteCoordinates.current;
+
+  if (
+    !map ||
+    !Array.isArray(routeCoordinates) ||
+    routeCoordinates.length < 2
+  ) {
+    return;
+  }
+
+  // Remove previous colored route
+  if (plannerRouteLayer.current) {
+    map.removeLayer(
+      plannerRouteLayer.current
+    );
+  }
+
+  const routeGroup =
+    L.layerGroup().addTo(map);
+
+  // =========================
+  // FIND ROUTE POSITION
+  // =========================
+
+  const getRouteIndex = (pandal) => {
+    const pandalLat =
+      Number(pandal.latitude);
+
+    const pandalLon =
+      Number(pandal.longitude);
+
+    let nearestIndex = 0;
+    let nearestDistance = Infinity;
+
+    routeCoordinates.forEach(
+      ([lat, lon], index) => {
+        const distance =
+          getDistanceKm(
+            pandalLat,
+            pandalLon,
+            lat,
+            lon
+          );
+
+        if (
+          distance <
+          nearestDistance
+        ) {
+          nearestDistance =
+            distance;
+
+          nearestIndex =
+            index;
+        }
+      }
+    );
+
+    return nearestIndex;
+  };
+
+  // =========================
+  // LAST COMPLETED PANDAL
+  // =========================
+
+  let completedUntil = -1;
+
+  activeDayPandals.forEach(
+    (pandal) => {
+      const id =
+        getPandalId(pandal);
+
+      if (
+        reachedPandalIds.includes(id)
+      ) {
+        completedUntil =
+          Math.max(
+            completedUntil,
+            getRouteIndex(pandal)
+          );
+      }
+    }
+  );
+
+  // =========================
+  // VIOLET COMPLETED ROUTE
+  // =========================
+
+  if (completedUntil >= 1) {
+    const completedRoute =
+      routeCoordinates.slice(
+        0,
+        completedUntil + 1
+      );
+
+    L.polyline(
+      completedRoute,
+      {
+        color: "#7c3aed",
+        weight: 7,
+        opacity: 0.95,
+      }
+    ).addTo(routeGroup);
+  }
+
+  // =========================
+  // GREEN REMAINING ROUTE
+  // =========================
+
+  const remainingRoute =
+    routeCoordinates.slice(
+      Math.max(0, completedUntil)
+    );
+
+  if (remainingRoute.length >= 2) {
+    L.polyline(
+      remainingRoute,
+      {
+        color: "#176b48",
+        weight: 6,
+        opacity: 0.9,
+      }
+    ).addTo(routeGroup);
+  }
+
+  plannerRouteLayer.current =
+    routeGroup;
+
+}, [
+  activeDayPandals,
+  reachedPandalIds,
+  routeVersion,
+]);
+
+// =========================
+// PANDAL ARRIVAL DETECTION
+// =========================
+
+useEffect(() => {
+  if (!userLocation) {
+    return;
+  }
+
+  const userLat = Number(
+    userLocation.lat
+  );
+
+  const userLon = Number(
+    userLocation.lon
+  );
+
+  if (
+    !Number.isFinite(userLat) ||
+    !Number.isFinite(userLon)
+  ) {
+    return;
+  }
+
+  // Check pandals in order:
+  // Pandal 1 -> Pandal 2 -> Pandal 3
+  const nextIndex =
+    reachedPandalIds.length;
+
+  const nextPandal =
+    activeDayPandals[nextIndex];
+
+  if (!nextPandal) {
+    return;
+  }
+
+  const pandalLat = Number(
+    nextPandal.latitude
+  );
+
+  const pandalLon = Number(
+    nextPandal.longitude
+  );
+
+  if (
+    !Number.isFinite(pandalLat) ||
+    !Number.isFinite(pandalLon)
+  ) {
+    return;
+  }
+
+  const distanceMeters =
+    getDistanceKm(
+      userLat,
+      userLon,
+      pandalLat,
+      pandalLon
+    ) * 1000;
+
+  // 50 metres = reached
+  if (distanceMeters <= 50) {
+    const pandalId =
+      getPandalId(nextPandal);
+
+    setReachedPandalIds(
+      (previous) => {
+        if (
+          previous.includes(
+            pandalId
+          )
+        ) {
+          return previous;
+        }
+
+        return [
+          ...previous,
+          pandalId,
+        ];
+      }
+    );
+
+    setArrivalMessage(
+      `🎉 You reached Pandal ${
+        nextIndex + 1
+      }!`
+    );
+  }
+}, [
+  userLocation,
+  activeDayPandals,
+  reachedPandalIds,
+]);
   // =========================
   // RENDER
   // =========================
@@ -1663,7 +2030,23 @@ out center tags;
                 "100%",
             }}
           />
-
+          {arrivalMessage && (
+  <div
+    style={{
+      marginTop: "12px",
+      padding: "14px",
+      borderRadius: "12px",
+      background: "#f3e8ff",
+      color: "#6d28d9",
+      border: "2px solid #a78bfa",
+      fontWeight: "700",
+      fontSize: "16px",
+      textAlign: "center",
+    }}
+  >
+    {arrivalMessage}
+  </div>
+)}
         </div>
 
       </div>

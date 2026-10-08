@@ -5261,15 +5261,14 @@ useEffect(() => {
 
         {showPlanner && (
           <PujaPlanner
-            pandals={
-              pandals
-            }
-            onClose={() =>
-              setShowPlanner(
-                false
-              )
-            }
-          />
+  pandals={pandals}
+  userLocation={userLocation}
+  onClose={() =>
+    setShowPlanner(
+      false
+    )
+  }
+/>
         )}
 
         {/* =================================================
