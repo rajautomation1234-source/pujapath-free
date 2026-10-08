@@ -132,7 +132,11 @@ const [
 
   const plannerRouteLayer =
     useRef(null);
+  const plannerLiveRouteLayer =
+  useRef(null);
 
+const lastRouteRequestLocation =
+  useRef(null);
   const plannerMarkersLayer =
     useRef(null);
   const plannerRouteCoordinates =
@@ -1275,7 +1279,177 @@ out center tags;
         true;
     }
   }, [userLocation]);
+// =========================
+// LIVE ROUTE TO NEXT PANDAL
+// =========================
 
+useEffect(() => {
+  const map =
+    plannerMapObject.current;
+
+  if (
+    !map ||
+    !userLocation ||
+    activeDayPandals.length === 0
+  ) {
+    return;
+  }
+
+  const userLat =
+    Number(userLocation.lat);
+
+  const userLon =
+    Number(userLocation.lon);
+
+  if (
+    !Number.isFinite(userLat) ||
+    !Number.isFinite(userLon)
+  ) {
+    return;
+  }
+
+  // Find the next pandal that has not been reached
+  const nextPandal =
+    activeDayPandals.find(
+      (pandal) =>
+        !reachedPandalIds.includes(
+          getPandalId(pandal)
+        )
+    );
+
+  if (!nextPandal) {
+    // All pandals reached
+    if (
+      plannerLiveRouteLayer.current
+    ) {
+      map.removeLayer(
+        plannerLiveRouteLayer.current
+      );
+
+      plannerLiveRouteLayer.current =
+        null;
+    }
+
+    return;
+  }
+
+  const targetLat =
+    Number(nextPandal.latitude);
+
+  const targetLon =
+    Number(nextPandal.longitude);
+
+  if (
+    !Number.isFinite(targetLat) ||
+    !Number.isFinite(targetLon)
+  ) {
+    return;
+  }
+
+  // Don't request a new route for tiny GPS movements
+  const previous =
+    lastRouteRequestLocation.current;
+
+  if (previous) {
+    const movedMeters =
+      getDistanceKm(
+        previous.lat,
+        previous.lon,
+        userLat,
+        userLon
+      ) * 1000;
+
+    if (movedMeters < 25) {
+      return;
+    }
+  }
+
+  lastRouteRequestLocation.current = {
+    lat: userLat,
+    lon: userLon,
+  };
+
+  const points =
+    `${userLon},${userLat};` +
+    `${targetLon},${targetLat}`;
+
+  const loadLiveRoute =
+    async () => {
+      try {
+        const response =
+          await fetch(
+            `${API}/api/route?points=${encodeURIComponent(
+              points
+            )}`
+          );
+
+        if (!response.ok) {
+          throw new Error(
+            "Live route API error"
+          );
+        }
+
+        const data =
+          await response.json();
+
+        const route =
+          data.routes?.[0];
+
+        const coordinates =
+          route?.geometry?.coordinates;
+
+        if (
+          !Array.isArray(coordinates) ||
+          coordinates.length < 2
+        ) {
+          return;
+        }
+
+        const liveRoute =
+          coordinates.map(
+            ([longitude, latitude]) => [
+              latitude,
+              longitude,
+            ]
+          );
+
+        // Remove old live route
+        if (
+          plannerLiveRouteLayer.current
+        ) {
+          map.removeLayer(
+            plannerLiveRouteLayer.current
+          );
+        }
+
+        // Draw new live navigation line
+        plannerLiveRouteLayer.current =
+          L.polyline(
+            liveRoute,
+            {
+              color: "#2563eb",
+              weight: 5,
+              opacity: 0.85,
+              dashArray: "10 8",
+            }
+          ).addTo(map);
+
+      } catch (error) {
+        console.warn(
+          "Live route update failed:",
+          error
+        );
+      }
+    };
+
+  loadLiveRoute();
+
+}, [
+  userLocation,
+  activeDayPandals,
+  reachedPandalIds,
+  API,
+]);
   // =========================
   // MAP MARKERS + ROAD ROUTE
   // =========================
@@ -1774,6 +1948,8 @@ useEffect(() => {
   if (distanceMeters <= 50) {
     const pandalId =
       getPandalId(nextPandal);
+    lastRouteRequestLocation.current =
+  null;  
 
     setReachedPandalIds(
       (previous) => {
