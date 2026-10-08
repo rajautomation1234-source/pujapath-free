@@ -5223,7 +5223,33 @@ useEffect(() => {
           />
         )}
 
-      </main>
+           </main>
+
+      {/* =================================================
+          FOOTER
+      ================================================= */}
+      <footer className="site-footer">
+
+        <div className="footer-links">
+          <span>About Us</span>
+          <span>Our Vision</span>
+          <span>Privacy Policy</span>
+          <span>Terms</span>
+          <span>Location Policy</span>
+          <span>Safety</span>
+          <span>Contact</span>
+          <span>User Guide</span>
+        </div>
+
+        <div className="footer-copy">
+          © 2026 PujaPath Live
+        </div>
+
+        <div className="footer-created">
+          Created by Raju ❤️
+        </div>
+
+      </footer>
     </div>
   );
 }
