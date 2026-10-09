@@ -2164,3 +2164,42 @@ header > span {
     margin-bottom: -18px;
   }
 }
+/* =========================
+   MOBILE WIDTH FIX
+   ========================= */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+img,
+video,
+canvas,
+svg {
+  max-width: 100%;
+}
+
+@media (max-width: 768px) {
+  body,
+  #root {
+    min-width: 0;
+  }
+
+  #map {
+    max-width: 100%;
+  }
+}
