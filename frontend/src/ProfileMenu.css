@@ -109,3 +109,49 @@
   border-radius: 0 0 9px 9px;
   color: #176747;
 }
+/* =================================
+   FIX PROFILE MENU ON MOBILE
+   ================================= */
+
+@media (max-width: 600px) {
+  .profile-dropdown {
+    position: fixed !important;
+
+    top: 105px;
+    right: 12px !important;
+    left: auto !important;
+
+    width: min(320px, calc(100vw - 24px)) !important;
+    max-width: calc(100vw - 24px);
+
+    box-sizing: border-box;
+    max-height: calc(100dvh - 125px);
+    overflow-y: auto;
+
+    z-index: 10001;
+  }
+
+  .profile-menu-backdrop {
+    position: fixed !important;
+    inset: 0;
+    width: 100vw;
+    height: 100dvh;
+
+    z-index: 10000;
+  }
+
+  .profile-summary {
+    min-width: 0;
+  }
+
+  .profile-summary > div:last-child {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .profile-menu-item {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+}
